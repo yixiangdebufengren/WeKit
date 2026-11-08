@@ -31,12 +31,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'workflow_dispatch' && github.repository == 'Ujhhgtg/WeKit-Dev') ||
+      (github.event_name == 'workflow_dispatch' && (github.repository == 'Ujhhgtg/WeKit-Dev' || github.repository == 'yixiangdebufengren/WeKit')) ||
       (
         !startsWith(github.event.head_commit.message, '[skip ci]') && 
         (
           github.event_name == 'pull_request' ||
-          (github.repository == 'Ujhhgtg/WeKit-Dev' && github.ref == 'refs/heads/master')
+          ((github.repository == 'Ujhhgtg/WeKit-Dev' || github.repository == 'yixiangdebufengren/WeKit') && github.ref == 'refs/heads/master')
         )
       )
     steps:
@@ -542,6 +542,7 @@ jobs:
           test "$(gpg --show-keys --with-colons "$RUNNER_TEMP/arch-pack/signing-key.asc" | awk -F: '$1 == "fpr" { print $10; exit }')" = "$SIGNING_FINGERPRINT"
           gpg --batch --import "$RUNNER_TEMP/arch-pack/signing-key.asc"
           gpg --batch --verify "$WEKIT_ARCH_ROOTFS.sig" "$WEKIT_ARCH_ROOTFS"
+          echo "WEKIT_ARCH_ROOTFS=$WEKIT_ARCH_ROOTFS" >> "$GITHUB_ENV"
 
       - name: Build native library and proot
         id: native_build
